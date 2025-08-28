@@ -15,7 +15,12 @@ func main() {
 		port = "8081"
 	}
 
-	app, err := app.NewApp()
+	kvStoreUrl := os.Getenv("KV_STORE_URL")
+	if kvStoreUrl == "" {
+		kvStoreUrl = "http://localhost:8080"
+	}
+
+	app, err := app.NewApp(kvStoreUrl)
 	if err != nil {
 		panic(err)
 	}

@@ -17,6 +17,11 @@ type KV struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
+// KVResponse represents the wrapped response from the API
+type KVResponse struct {
+	KV KV `json:"kv"`
+}
+
 type KVStoreService struct {
 	Logger     *log.Logger
 	Client     *http.Client
@@ -82,14 +87,13 @@ func (s *KVStoreService) GetKV(key string) (KV, error) {
 		return KV{}, fmt.Errorf("unexpected status code: %d. Error message: %v", resp.StatusCode, message)
 	}
 
-	var kv *KV
-
-	if err := json.NewDecoder(resp.Body).Decode(&kv); err != nil {
+	var kvResponse KVResponse
+	if err := json.NewDecoder(resp.Body).Decode(&kvResponse); err != nil {
 		s.Logger.Printf("[GetKV] error decoding body: %v", err)
 		return KV{}, fmt.Errorf("error decoding body: %v", err)
 	}
 
-	return *kv, nil
+	return kvResponse.KV, nil
 }
 
 // UpsertKV creates or updates a key-value pair in the kv-store.
@@ -142,13 +146,13 @@ func (s *KVStoreService) UpsertKV(key string, value string) (KV, error) {
 		return KV{}, fmt.Errorf("%s", message)
 	}
 
-	var kv KV
-	if err = json.NewDecoder(resp.Body).Decode(&kv); err != nil {
+	var kvResponse KVResponse
+	if err = json.NewDecoder(resp.Body).Decode(&kvResponse); err != nil {
 		s.Logger.Printf("[UpsertKV] Error decoding response: %v", err)
 		return KV{}, fmt.Errorf("error decoding response: %v", err)
 	}
 
-	return kv, nil
+	return kvResponse.KV, nil
 }
 
 // DeleteKV deletes a key-value pair from the kv-store.

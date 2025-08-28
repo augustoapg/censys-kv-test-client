@@ -1,0 +1,17 @@
+services:
+  kv-store-test-client:
+    build: .
+    ports:
+      - "8081:8081"
+    container_name: censys-kv-store-test-client
+    restart: unless-stopped
+    networks:
+      - censys-network
+    environment:
+      - PORT=8081
+      - KV_STORE_URL=http://censys-kv-store:8080
+
+# Network for the test client to be able to make requests to the kv-store
+networks:
+  censys-network:
+    external: true

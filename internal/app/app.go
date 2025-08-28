@@ -16,15 +16,18 @@ type App struct {
 
 func NewApp(kvStoreUrl string) (*App, error) {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-	verificationHandler := api.NewVerificationHandler(logger)
 	kvService, err := services.NewKVStoreService(logger, kvStoreUrl)
 	if err != nil {
 		return nil, err
 	}
 
-	return &App{
+	verificationHandler := api.NewVerificationHandler(logger, kvService)
+
+	app := &App{
 		Logger:              logger,
 		VerificationHandler: verificationHandler,
 		KVStoreService:      kvService,
-	}, nil
+	}
+
+	return app, nil
 }

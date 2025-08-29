@@ -21,6 +21,8 @@ func NewVerificationHandler(logger *log.Logger, kvStoreService *services.KVStore
 	}
 }
 
+// upsertAndValidateKV creates a key-value pair in the KV store and validates it by verifying that
+// the key-value pair returned is the same that was sent to the service.
 func (v *VerificationHandler) upsertAndValidateKV(key string, value string) error {
 	kv, err := v.KvStoreService.UpsertKV(key, value)
 	if err != nil {
@@ -34,6 +36,8 @@ func (v *VerificationHandler) upsertAndValidateKV(key string, value string) erro
 	return nil
 }
 
+// getAndValidateKV retrieves a key-value pair from the KV store and validates it by verifying that
+// the value returned is the expected one.
 func (v *VerificationHandler) getAndValidateKV(key string, expectedValue string) error {
 	kv, err := v.KvStoreService.GetKV(key)
 	if err != nil {
